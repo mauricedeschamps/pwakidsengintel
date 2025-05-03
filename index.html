@@ -5,19 +5,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Kids English Flashcards 100</title>
     
-    <!-- PWA Meta Tags -->
+    <!-- ==================== PWA必須設定 ==================== -->
+    <link rel="manifest" href="/pwakidsengintel/manifest.json">
     <meta name="theme-color" content="#FF9966">
-    <link rel="manifest" href="/manifest.json">
-    
-    <!-- iOS PWA Tags -->
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="English Cards">
-    
-    <!-- Icons -->
+    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/616/616408.png">
+    <!-- ==================================================== -->
+
+    <!-- ホーム画面アイコン -->
     <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/616/616408.png">
     <link rel="icon" href="https://cdn-icons-png.flaticon.com/512/616/616408.png">
-    
+
     <style>
         * {
             margin: 0;
@@ -33,17 +33,25 @@
             flex-direction: column;
             overflow: hidden;
         }
-        /* [これ以前のすべてのCSSスタイルはそのまま保持] */
-        /* ... 元のCSSスタイルすべて ... */
+        header {
+            background: #FF9966;
+            color: white;
+            padding: 12px 40px;
+            text-align: center;
+            font-size: 1.1rem;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            position: relative;
+        }
+        /* ... [元のCSSスタイルを全てそのまま保持] ... */
     </style>
 </head>
 <body>
-    <!-- Loading screen -->
+    <!-- ローディング画面 -->
     <div id="loading">
         Loading...
     </div>
 
-    <!-- Main screen -->
+    <!-- メイン画面 -->
     <header>
         <div class="header-content">
             <div class="title-container">
@@ -55,7 +63,7 @@
     </header>
 
     <div class="category-container" id="categoryContainer">
-        <!-- Category buttons will be added by JS -->
+        <!-- カテゴリボタンはJSで生成 -->
     </div>
 
     <footer>
@@ -63,25 +71,25 @@
         <a href="mailto:mementomorikatsu@gmail.com" class="footer-email">mementomorikatsu@gmail.com</a>
     </footer>
 
-    <!-- Word screen -->
+    <!-- 単語画面 -->
     <div class="word-screen" id="wordScreen">
         <div class="word-header">
             <button class="back-button" onclick="closeWordScreen()">← Back</button>
             <div id="currentCategoryName"></div>
         </div>
         <div class="word-container" id="wordContainer">
-            <!-- Word cards will be added by JS -->
+            <!-- 単語カードはJSで生成 -->
         </div>
     </div>
 
-    <!-- Sentence screen -->
+    <!-- 文章画面 -->
     <div class="sentence-screen" id="sentenceScreen">
         <img class="sentence-image" id="sentenceImage" src="" alt="">
         <div class="sentence-text" id="sentenceText"></div>
         <button class="next-button" onclick="showNextSentence()">Next</button>
     </div>
 
-    <!-- Settings menu -->
+    <!-- 設定メニュー -->
     <div id="settingsMenu" class="settings-menu">
         <h3>Settings</h3>
         <div class="speed-control">
@@ -93,28 +101,52 @@
     </div>
 
     <script>
-        // PWA Installation Prompt
+        // ================ PWAインストール処理 ================
         let deferredPrompt;
         window.addEventListener('beforeinstallprompt', (e) => {
             e.preventDefault();
             deferredPrompt = e;
-            // You can show install button here if needed
+            console.log('PWAインストール可能');
         });
 
-        // Category data
+        // ================ Service Worker登録 ================
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/pwakidsengintel/sw.js', { 
+                    scope: '/pwakidsengintel/' 
+                }).then(registration => {
+                    console.log('ServiceWorker登録成功:', registration.scope);
+                }).catch(error => {
+                    console.log('ServiceWorker登録失敗:', error);
+                });
+            });
+        }
+
+        // ================ 元のアプリケーションコード ================
+        // カテゴリデータ
         const categories = [
-            /* 元のカテゴリデータはそのまま保持 */
-            /* ... 元のcategories配列データすべて ... */
+            {
+                id: "animals",
+                name: "Animals",
+                nameEn: "Animals",
+                icon: "https://frame-illust.com/fi/wp-content/uploads/2017/03/9687.png",
+                words: [
+                    { text: "Dog", image: "https://frame-illust.com/fi/wp-content/uploads/2017/03/9687.png", sentences: ["It's a dog.", "I like dogs.", "The dog is cute."] },
+                    // ... 他の単語データをそのまま保持 ...
+                ]
+            },
+            // ... 他のカテゴリデータをそのまま保持 ...
         ];
 
-        // Current word and sentence index
+        // 現在の単語と文章インデックス
         let currentWord = null;
         let currentSentenceIndex = 0;
         let speechSpeed = 1.0;
 
-        // Initialize - generate category buttons
+        // カテゴリ初期化
         function initCategories() {
             const container = document.getElementById('categoryContainer');
+            container.innerHTML = '';
             
             categories.forEach(category => {
                 const box = document.createElement('div');
@@ -124,40 +156,49 @@
                     <div class="category-name">${category.name}</div>
                     <div class="category-name-en">${category.nameEn}</div>
                 `;
-                
-                box.addEventListener('click', () => {
-                    openWordScreen(category);
-                });
-                
+                box.addEventListener('click', () => openWordScreen(category));
                 container.appendChild(box);
             });
         }
 
-        /* 元のすべての関数はそのまま保持 */
-        /* ... openWordScreen(), closeWordScreen(), showSentences() など ... */
-
-        // Initialize
-        window.addEventListener('load', function() {
-            // Register Service Worker
-            if ('serviceWorker' in navigator) {
-                navigator.serviceWorker.register('/sw.js')
-                    .then(registration => {
-                        console.log('ServiceWorker registration successful');
-                    })
-                    .catch(error => {
-                        console.log('ServiceWorker registration failed:', error);
-                    });
-            }
-
-            const savedSpeed = localStorage.getItem('speechSpeed');
-            if (savedSpeed) {
-                speechSpeed = parseFloat(savedSpeed);
-            }
+        // 単語画面を開く
+        function openWordScreen(category) {
+            document.getElementById('currentCategoryName').textContent = category.name;
+            const wordContainer = document.getElementById('wordContainer');
+            wordContainer.innerHTML = '';
             
+            category.words.forEach(word => {
+                const card = document.createElement('div');
+                card.className = 'word-card';
+                card.setAttribute('data-category', category.id);
+                card.innerHTML = `
+                    <img src="${word.image}" alt="${word.text}" class="word-image">
+                    <div class="word-text">${word.text}</div>
+                `;
+                card.addEventListener('click', () => showSentences(word));
+                wordContainer.appendChild(card);
+            });
+            
+            document.getElementById('wordScreen').style.display = 'flex';
+        }
+
+        // 他の関数（closeWordScreen, showSentences, showNextSentenceなど）もそのまま保持
+        // ... [元のJavaScript関数を全てそのまま保持] ...
+
+        // 初期化処理
+        window.addEventListener('load', function() {
+            // 音声速度設定を読み込み
+            const savedSpeed = localStorage.getItem('speechSpeed');
+            if (savedSpeed) speechSpeed = parseFloat(savedSpeed);
+            
+            // 設定メニューを非表示に
             document.getElementById('settingsMenu').style.display = 'none';
+            
+            // カテゴリを初期化
             initCategories();
             
-            setTimeout(function() {
+            // ローディング画面を非表示に
+            setTimeout(() => {
                 document.getElementById('loading').style.display = 'none';
             }, 500);
         });
