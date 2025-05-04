@@ -4,20 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Kids English Flashcards 100</title>
-    
-    <!-- ==================== PWA必須設定 ==================== -->
-    <link rel="manifest" href="/pwakidsengintel/manifest.json">
-    <meta name="theme-color" content="#FF9966">
+    <!-- PWA manifest -->
+    <link rel="manifest" href="/manifest.json">
+    <!-- Home screen icon settings -->
+    <link rel="apple-touch-icon" href="icons/icon-192x192.png">
+    <link rel="icon" href="icons/icon-192x192.png">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="English Cards">
-    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/616/616408.png">
-    <!-- ==================================================== -->
-
-    <!-- ホーム画面アイコン -->
-    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/616/616408.png">
-    <link rel="icon" href="https://cdn-icons-png.flaticon.com/512/616/616408.png">
-
+    <meta name="theme-color" content="#FF9966">
     <style>
         * {
             margin: 0;
@@ -42,28 +36,265 @@
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
             position: relative;
         }
-        /* ... [元のCSSスタイルを全てそのまま保持] ... */
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+        }
+        .title-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .main-title {
+            font-size: 1.3rem;
+            margin-bottom: 5px;
+        }
+        .category-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: 1fr 1fr;
+            flex: 1;
+            gap: 8px;
+            padding: 10px;
+        }
+        .category-box {
+            background: white;
+            border-radius: 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+            overflow: hidden;
+            position: relative;
+            padding: 10px;
+        }
+        .category-box:active {
+            transform: scale(0.98);
+        }
+        .category-icon {
+            width: 60%;
+            height: auto;
+            max-height: 100px;
+            margin-bottom: 10px;
+            object-fit: contain;
+        }
+        .category-name {
+            font-size: 1.2rem;
+            color: #FF6B6B;
+            font-weight: bold;
+            text-align: center;
+        }
+        .category-name-en {
+            font-size: 0.9rem;
+            color: #888;
+            margin-top: 3px;
+        }
+        footer {
+            background: #FF9966;
+            color: white;
+            text-align: center;
+            padding: 8px 0;
+            font-size: 0.8rem;
+            display: flex;
+            flex-direction: column;
+        }
+        .footer-contact {
+            margin-bottom: 5px;
+        }
+        .footer-email {
+            color: white;
+            text-decoration: none;
+        }
+        /* Word screen style */
+        .word-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #FFF9F0;
+            z-index: 100;
+            display: none;
+            flex-direction: column;
+            padding: 15px;
+        }
+        .word-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        .back-button {
+            background: #FF9966;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 0.9rem;
+            cursor: pointer;
+        }
+        .word-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            flex: 1;
+            overflow-y: auto;
+            max-height: calc(100vh - 120px);
+            padding-bottom: 20px;
+        }
+        .word-card {
+            background: white;
+            border-radius: 12px;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            cursor: pointer;
+        }
+        .word-card:active {
+            background: #FFF0E0;
+        }
+        .word-image {
+            width: 80%;
+            height: auto;
+            max-height: 120px;
+            margin-bottom: 10px;
+            object-fit: contain;
+        }
+        .word-text {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: #333;
+            text-align: center;
+        }
+        /* Sentence screen style */
+        .sentence-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #E6F7FF;
+            z-index: 200;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            text-align: center;
+        }
+        .sentence-text {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            color: #333;
+        }
+        .sentence-image {
+            width: 60%;
+            max-width: 200px;
+            margin-bottom: 20px;
+            object-fit: contain;
+        }
+        .next-button {
+            background: #66AAFF;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-size: 1rem;
+            margin-top: 15px;
+            cursor: button;
+        }
+        
+        /* Settings button */
+        .settings-btn {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: white;
+            position: absolute;
+            right: 10px;
+        }
+        
+        /* Settings menu */
+        .settings-menu {
+            position: fixed;
+            top: 50px;
+            right: 10px;
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.2);
+            z-index: 1000;
+            display: none;
+        }
+        
+        .speed-control {
+            margin-top: 10px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        
+        .speed-control button {
+            margin: 5px;
+            padding: 5px 10px;
+            background: #FF9966;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 0.9rem;
+            cursor: pointer;
+        }
+        
+        /* Category colors */
+        .word-card[data-category="animals"] { border-top: 5px solid #FF9966; }
+        .word-card[data-category="fruits"] { border-top: 5px solid #66CC66; }
+        .word-card[data-category="family"] { border-top: 5px solid #6699FF; }
+        .word-card[data-category="others"] { border-top: 5px solid #CC66FF; }
+
+        /* Loading screen */
+        #loading {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            font-size: 1.2rem;
+        }
     </style>
 </head>
 <body>
-    <!-- ローディング画面 -->
+    <!-- Loading screen -->
     <div id="loading">
         Loading...
     </div>
-
-    <!-- メイン画面 -->
+    
+    <!-- Main screen -->
     <header>
         <div class="header-content">
             <div class="title-container">
                 <div class="main-title">Kids English Flashcards</div>
                 <div>Tap to start!</div>
             </div>
+            <!-- Settings button -->
             <button id="settingsBtn" class="settings-btn">⚙️</button>
         </div>
     </header>
 
     <div class="category-container" id="categoryContainer">
-        <!-- カテゴリボタンはJSで生成 -->
+        <!-- Category buttons will be added by JS -->
     </div>
 
     <footer>
@@ -71,25 +302,25 @@
         <a href="mailto:mementomorikatsu@gmail.com" class="footer-email">mementomorikatsu@gmail.com</a>
     </footer>
 
-    <!-- 単語画面 -->
+    <!-- Word screen -->
     <div class="word-screen" id="wordScreen">
         <div class="word-header">
             <button class="back-button" onclick="closeWordScreen()">← Back</button>
             <div id="currentCategoryName"></div>
         </div>
         <div class="word-container" id="wordContainer">
-            <!-- 単語カードはJSで生成 -->
+            <!-- Word cards will be added by JS -->
         </div>
     </div>
 
-    <!-- 文章画面 -->
+    <!-- Sentence screen -->
     <div class="sentence-screen" id="sentenceScreen">
         <img class="sentence-image" id="sentenceImage" src="" alt="">
         <div class="sentence-text" id="sentenceText"></div>
         <button class="next-button" onclick="showNextSentence()">Next</button>
     </div>
 
-    <!-- 設定メニュー -->
+    <!-- Settings menu -->
     <div id="settingsMenu" class="settings-menu">
         <h3>Settings</h3>
         <div class="speed-control">
@@ -101,29 +332,7 @@
     </div>
 
     <script>
-        // ================ PWAインストール処理 ================
-        let deferredPrompt;
-        window.addEventListener('beforeinstallprompt', (e) => {
-            e.preventDefault();
-            deferredPrompt = e;
-            console.log('PWAインストール可能');
-        });
-
-        // ================ Service Worker登録 ================
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('/pwakidsengintel/sw.js', { 
-                    scope: '/pwakidsengintel/' 
-                }).then(registration => {
-                    console.log('ServiceWorker登録成功:', registration.scope);
-                }).catch(error => {
-                    console.log('ServiceWorker登録失敗:', error);
-                });
-            });
-        }
-
-        // ================ 元のアプリケーションコード ================
-        // カテゴリデータ
+        // Category data
         const categories = [
             {
                 id: "animals",
@@ -132,21 +341,121 @@
                 icon: "https://frame-illust.com/fi/wp-content/uploads/2017/03/9687.png",
                 words: [
                     { text: "Dog", image: "https://frame-illust.com/fi/wp-content/uploads/2017/03/9687.png", sentences: ["It's a dog.", "I like dogs.", "The dog is cute."] },
-                    // ... 他の単語データをそのまま保持 ...
+                    { text: "Cat", image: "https://illust-stock.com/wp-content/uploads/neko-392x400.png", sentences: ["It's a cat.", "I like cats.", "The cat is soft."] },
+                    { text: "Lion", image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTRxHPum8dELQHlOfG96KIY99NSOHQwkbs11QRM3ss6o2O2puKkH1kE1dUO&s=10", sentences: ["It's a lion.", "The lion is big.", "The lion roars."] },
+                    { text: "Bird", image: "https://illustk.com/wp-content/img/illust/simple_bird_blue.png", sentences: ["It's a bird.", "The bird can fly.", "I hear birds sing."] },
+                    { text: "Fish", image: "https://illust.startoo.co/wp-content/uploads/2024/11/1.kawaii-sakana.png", sentences: ["It's a fish.", "Fish swim in water.", "I see colorful fish."] },
+                    { text: "Elephant", image: "https://tsukatte.com/wp-content/uploads/2020/07/elephant.png", sentences: ["It's an elephant.", "The elephant is huge.", "The elephant has a trunk."] },
+                    { text: "Giraffe", image: "https://illust8.com/wp-content/uploads/2019/07/animal_cute_kirin_giraffe_4191.png", sentences: ["It's a giraffe.", "The giraffe is tall.", "The giraffe has a long neck."] },
+                    { text: "Monkey", image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRZ88FSAQNY7skMb8-g9PxgyNGun-r7ORAyuK17FBLDyl_Aff5ewYMvQpkC&s=10", sentences: ["It's a monkey.", "The monkey climbs trees.", "The monkey is funny."] },
+                    { text: "Rabbit", image: "https://soco-st.com/wp-content/themes/socost/upload/15294_line.png", sentences: ["It's a rabbit.", "The rabbit hops.", "The rabbit is fluffy."] },
+                    { text: "Bear", image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT55iTGJM3xomQB8uw_Vtf0KE9rBiMkXt2U8otVqSAwWA&s", sentences: ["It's a bear.", "The bear is strong.", "Bears like honey."] },
+                    { text: "Panda", image: "https://illustkun.com/wp-content/uploads/illustkun-04864-panda.png", sentences: ["It's a panda.", "Pandas eat bamboo.", "The panda is black and white."] },
+                    { text: "Penguin", image: "https://soco-st.com/wp-content/themes/socost/upload/16457_color.png", sentences: ["It's a penguin.", "Penguins can swim.", "Penguins live in cold places."] },
+                    { text: "Tiger", image: "https://frame-illust.com/fi/wp-content/uploads/2017/03/9563.png", sentences: ["It's a tiger.", "The tiger has stripes.", "Tigers are fast."] },
+                    { text: "Zebra", image: "https://illustkun.com/wp-content/uploads/illustkun-03853-zebra.png", sentences: ["It's a zebra.", "Zebras have stripes.", "Zebras run fast."] },
+                    { text: "Horse", image: "https://frame-illust.com/fi/wp-content/uploads/2017/03/9547.png", sentences: ["It's a horse.", "Horses can run fast.", "I want to ride a horse."] },
+                    { text: "Cow", image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRASf2B7kCm-87WRJ0WdRWKujTqqyz4Jj8fiXe-yxelkg&s", sentences: ["It's a cow.", "Cows give us milk.", "The cow says moo."] },
+                    { text: "Pig", image: "https://piclike.net/wp-content/uploads/2022/06/buta.png", sentences: ["It's a pig.", "Pigs like mud.", "The pig says oink."] },
+                    { text: "Sheep", image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR99Ie6BhXaI7kL6DcpQfo4DUeZma1Jv49pJQ&usqp=CAU", sentences: ["It's a sheep.", "Sheep give us wool.", "The sheep says baa."] },
+                    { text: "Duck", image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSY7GpAuyDtArHUMS_coPrKVHY9Galy6y5sC46Pr1hZzF9tKHfCIXoiZ9Th&s=10", sentences: ["It's a duck.", "Ducks can swim.", "The duck says quack."] },
+                    { text: "Owl", image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSqhbQllKc1fhXrAHeJngta13RPFjPqQGTbLg2eHv929glIr13wZS6fnVU&s=10", sentences: ["It's an owl.", "Owls are wise.", "The owl says hoot."] }
                 ]
             },
-            // ... 他のカテゴリデータをそのまま保持 ...
+            {
+                id: "fruits",
+                name: "Fruits & Vegetables",
+                nameEn: "Fruits & Veggies",
+                icon: "https://illust8.com/wp-content/uploads/2018/06/fruit_apple_illust_150.png",
+                words: [
+                    { text: "Apple", image: "https://illust8.com/wp-content/uploads/2018/06/fruit_apple_illust_150.png", sentences: ["It's an apple.", "I eat apples.", "Apples are crunchy."] },
+                    { text: "Banana", image: "https://frame-illust.com/fi/wp-content/uploads/2017/05/banana-9816-02.png", sentences: ["It's a banana.", "I eat bananas.", "Bananas are sweet."] },
+                    { text: "Orange", image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR0zti25R_ESIZ7eXk19uz9mRimRYfAzHXZZi26Q_ZVpLjijDuOt_Nxw4Ou&s=10", sentences: ["It's an orange.", "I eat oranges.", "Oranges are juicy."] },
+                    { text: "Grape", image: "https://illust8.com/wp-content/uploads/2018/06/fruit_grape_illust_108.png", sentences: ["It's a grape.", "I eat grapes.", "Grapes are small."] },
+                    { text: "Strawberry", image: "https://freeillust-classic.com/wp-content/uploads/2018/12/0103010002.png", sentences: ["It's a strawberry.", "I eat strawberries.", "Strawberries are red."] },
+                    { text: "Carrot", image: "https://illust-town.com/wp-content/uploads/carrots.png", sentences: ["It's a carrot.", "I eat carrots.", "Carrots are orange."] },
+                    { text: "Tomato", image: "https://illust8.com/wp-content/uploads/2018/06/vegetable_tomato_illust_184.png", sentences: ["It's a tomato.", "I eat tomatoes.", "Tomatoes are red."] },
+                    { text: "Onion", image: "https://cdn-ak.f.st-hatena.com/images/fotolife/N/Newdonut/20230922/20230922004859.png", sentences: ["It's an onion.", "Onions make me cry.", "Onions are round."] },
+                    { text: "Potato", image: "https://illustkun.com/wp-content/uploads/illustkun-03724-potato.png", sentences: ["It's a potato.", "I eat potatoes.", "Potatoes are brown."] },
+                    { text: "Lettuce", image: "https://tsukatte.com/wp-content/uploads/2019/01/lettuce.png", sentences: ["It's lettuce.", "I eat lettuce.", "Lettuce is green."] },
+                    { text: "Pineapple", image: "https://tegakisozai.com/wp-content/uploads/2020/04/painappuru.png", sentences: ["It's a pineapple.", "I eat pineapple.", "Pineapple is sweet."] },
+                    { text: "Watermelon", image: "https://eiyoushi-hutaba.com/wp-content/uploads/2021/07/%E3%82%B9%E3%82%A4%E3%82%AB%E3%80%80%E8%B5%A4-1024x1024.png", sentences: ["It's a watermelon.", "I eat watermelon.", "Watermelon is juicy."] },
+                    { text: "Cherry", image: "https://photo-step.co.jp/illustkobo/wp-content/uploads/2019/06/0144_R_450.png", sentences: ["It's a cherry.", "I eat cherries.", "Cherries are small."] },
+                    { text: "Peach", image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ-eecH_2MCrLuFc9juze6mYp2XHrIE5cYM2w&usqp=CAU", sentences: ["It's a peach.", "I eat peaches.", "Peaches are soft."] },
+                    { text: "Pear", image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR0GS_YP3wZBU-Y6vJFp0DH2p4jU6IGJe2SDZLT0BOwC-5h2WjnwVjzYX2B&s=10", sentences: ["It's a pear.", "I eat pears.", "Pears are sweet."] },
+                    { text: "Cucumber", image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSxXnxxG3gpjJ8t--bzDfpvpwBV2Hi8oi5jS9zkV30mMuNAl_TMBn1MeQ7u&s=10", sentences: ["It's a cucumber.", "I eat cucumbers.", "Cucumbers are long."] },
+                    { text: "Broccoli", image: "https://illustkun.com/wp-content/uploads/illustkun-04161-broccoli.png", sentences: ["It's broccoli.", "I eat broccoli.", "Broccoli is green."] },
+                    { text: "Corn", image: "https://tsukatte.com/wp-content/uploads/2019/07/corn.png", sentences: ["It's corn.", "I eat corn.", "Corn is yellow."] },
+                    { text: "Eggplant", image: "https://tsukatte.com/wp-content/uploads/2019/02/eggplant.png", sentences: ["It's an eggplant.", "I eat eggplant.", "Eggplant is purple."] },
+                    { text: "Pumpkin", image: "https://stockmaterial.net/wp/wp-content/uploads/img/food_pumpkin01_01.png", sentences: ["It's a pumpkin.", "I eat pumpkin.", "Pumpkins are orange."] }
+                ]
+            },
+            {
+                id: "family",
+                name: "Family & People",
+                nameEn: "Family & People",
+                icon: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ6U6SI7Hhh6e58rx324edh6ggK-vhZoOm3uR0Xx9Lx53DLww6NFsb5AXFr&s=10",
+                words: [
+                    { text: "Mom", image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ6U6SI7Hhh6e58rx324edh6ggK-vhZoOm3uR0Xx9Lx53DLww6NFsb5AXFr&s=10", isPerson: true, sentences: ["This is mom.", "I love mom.", "Mom is kind."] },
+                    { text: "Dad", image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS-Jc-m-gWmt1bCP36QqmFVThUqDYH90kLBiMY-6DlBJ_yfO2TCnxFpmuvG&s=10", isPerson: true, sentences: ["This is dad.", "I love dad.", "Dad is strong."] },
+                    { text: "Baby", image: "https://illustrain.com/wp-content/uploads/2016/02/illustrain10-akatyan02.png", isPerson: true, sentences: ["This is a baby.", "The baby is small.", "Babies are cute."] },
+                    { text: "Grandma", image: "https://tegakisozai.com/wp-content/uploads/2022/06/obaasan.png", isPerson: true, sentences: ["This is grandma.", "I love grandma.", "Grandma is sweet."] },
+                    { text: "Grandpa", image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQFmlP-WuJlXOPeu3cqfXzgt5q5vyiyXHnlt9_5zl0ty3PKzYzZgzgAh6ta&s=10", isPerson: true, sentences: ["This is grandpa.", "I love grandpa.", "Grandpa is wise."] },
+                    { text: "Teacher", image: "https://illust8.com/wp-content/uploads/2018/12/school_teacher_female_illust_2435.png", isPerson: true, sentences: ["This is a teacher.", "Teachers help us learn.", "I like my teacher."] },
+                    { text: "Doctor", image: "https://illust8.com/wp-content/uploads/2018/10/medical_doctor_illust_1530.png", isPerson: true, sentences: ["This is a doctor.", "Doctors help us.", "Doctors are smart."] },
+                    { text: "Friend", image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRveZnzaREQgjfEd6jfOzvhIcnGbxfJDUkq9r9_9NBcFXZlJWZQ2-IE2wQ&s=10", isPerson: true, sentences: ["This is my friend.", "I play with friends.", "Friends are nice."] },
+                    { text: "Boy", image: "https://piclike.net/wp-content/uploads/2016/07/boy_face_smile.png", isPerson: true, sentences: ["This is a boy.", "Boys play outside.", "The boy is happy."] },
+                    { text: "Girl", image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTX-1bAo_svcMAMFk3NUB5OAwZyy1TpsmTtpnWRLM9cozpJM-VetcFgxDtd&s=10", isPerson: true, sentences: ["This is a girl.", "Girls like to play.", "The girl is smiling."] },
+                    { text: "Brother", image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTX0PO1iUW1s30WaOlBpdU_2ytRIm-wJARaN2dpS80MrBOimr2wWAqaVSzz&s=10", isPerson: true, sentences: ["This is my brother.", "I play with my brother.", "Brothers are fun."] },
+                    { text: "Sister", image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRxrB8MKrth4eI3yvgQ6kX8w-RnfjMp7dipIi0iwQRyK2Rliafdgw00WFI&s=10", isPerson: true, sentences: ["This is my sister.", "I play with my sister.", "Sisters are kind."] },
+                    { text: "Uncle", image: "https://tegakisozai.com/wp-content/uploads/2024/02/ojisan_meganewokaketasutunoojisan.png", isPerson: true, sentences: ["This is my uncle.", "Uncles are fun.", "I like my uncle."] },
+                    { text: "Aunt", image: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhKYyuqNey1lUJ-3FhZrA4oo_8x231zeE8HS7w7KeWcZdwYU3hSA1PShgaqgtdEt-xVPQDYveanSBtlMCT47EhFpoNdXVPbxj7Nn-lAwF687DLkkmGjjwTpYhMi6CR-69dqu5KpI1C7nrh3/s1600/obasan2.png", isPerson: true, sentences: ["This is my aunt.", "Aunts are nice.", "I like my aunt."] },
+                    { text: "Police", image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRZtI7k3NHKGKW-QL4VCJkCG3-1FuVo6ips5g&usqp=CAU", isPerson: true, sentences: ["This is a police officer.", "Police help people.", "Police keep us safe."] },
+                    { text: "Chef", image: "https://illust8.com/wp-content/uploads/2018/11/kitchen_chef_illust_2065.png", isPerson: true, sentences: ["This is a chef.", "Chefs cook food.", "Chefs make tasty food."] },
+                    { text: "Farmer", image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcShv_T9jwDJ1Yn1M8aOjB3kD8_whHZa31FghQ&usqp=CAU", isPerson: true, sentences: ["This is a farmer.", "Farmers grow food.", "Farmers work hard."] },
+                    { text: "Nurse", image: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEj3Bzjc-jvXUIgSn-Q6n3zHrB-7EevIwIFZx8YywD7AKa8UPUjZzKzTdkdx4duXXha0OXKRX-Ib4OGfzEs18kXjXq7CeVDSYLkh5fx-JtvBo598lgfhalHlymvj2DVFeMyJHcNciB0dx5uU/s800/nurse_cap.png", isPerson: true, sentences: ["This is a nurse.", "Nurses help doctors.", "Nurses are kind."] },
+                    { text: "Firefighter", image: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEg407UmwBUzEM6qMSw-YiZ2GF33wquGAVxMR_YKr-lZwtuzscvPPc5pLHy02SeoFnQM0rDn6uAoNQq6_sBcKw_ENMfOnLoIy1T-Z6ENr8je8Fh33mXSgCHGNy-vEde2kVC3K3H0yx2BHnrx/s800/syoubousya_housui.png", isPerson: true, sentences: ["This is a firefighter.", "Firefighters put out fires.", "Firefighters are brave."] },
+                    { text: "Pilot", image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR7m_lJMPKGcqA9X9vWIXu82uxDtVclbTdGj0OmEZ_lqRJ89lJUAAQNwaXP&s=10", isPerson: true, sentences: ["This is a pilot.", "Pilots fly planes.", "Pilots travel far."] }
+                ]
+            },
+            {
+                id: "others",
+                name: "Other Things",
+                nameEn: "Other Things",
+                icon: "https://illustkun.com/wp-content/uploads/2018/12/illustkun-02395-small-car.png",
+                words: [
+                    { text: "Car", image: "https://illustkun.com/wp-content/uploads/2018/12/illustkun-02395-small-car.png", sentences: ["It's a car.", "I have a toy car.", "Cars go fast."] },
+                    { text: "Ball", image: "https://tsukatte.com/wp-content/uploads/2019/07/beach-ball.png", sentences: ["It's a ball.", "I have a ball.", "I play with balls."] },
+                    { text: "Book", image: "https://tsukatte.com/wp-content/uploads/2023/01/book_04_red.png", sentences: ["It's a book.", "I have many books.", "I like to read books."] },
+                    { text: "House", image: "https://free-icons.net/wp-content/uploads/2020/01/build001.png", sentences: ["It's a house.", "I live in a house.", "Houses keep us safe."] },
+                    { text: "Tree", image: "https://tsukatte.com/wp-content/uploads/2019/09/tree_01.png", sentences: ["It's a tree.", "Trees give us oxygen.", "I like big trees."] },
+                    { text: "Flower", image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTl3m4uKueKugHbYO_k7L7imV2koi-v9GEGR9hNod3b2i3Z7Kvx0cX1q0dg&s=10", sentences: ["It's a flower.", "Flowers are pretty.", "I like colorful flowers."] },
+                    { text: "Bicycle", image: "https://tegakisozai.com/wp-content/uploads/2020/06/norimono_zitensya_aka.png", sentences: ["It's a bicycle.", "I have a bicycle.", "I ride my bicycle."] },
+                    { text: "Clock", image: "https://soco-st.com/wp-content/themes/socost/upload/12808_color.png", sentences: ["It's a clock.", "Clocks tell time.", "I can read a clock."] },
+                    { text: "Chair", image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRqZjzZDuiNBcPSgDwts8HufPViQ5ogLpUE0vGEteGZpmfUN8QE3fnc024-&s=10", sentences: ["It's a chair.", "I sit on a chair.", "Chairs are useful."] },
+                    { text: "Bed", image: "https://tsukatte.com/wp-content/uploads/2021/01/bed_lightblue.png", sentences: ["It's a bed.", "I sleep in a bed.", "Beds are comfortable."] },
+                    { text: "Table", image: "https://tsukatte.com/wp-content/uploads/2020/08/table-wood.png", sentences: ["It's a table.", "I eat at the table.", "Tables are useful."] },
+                    { text: "Cup", image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR4VpuiH3L9HXyIvlgUPuGYbt8buMOLjCJUS2tOF3TT5n5whoWBE9T2ZYg&s=10", sentences: ["It's a cup.", "I drink from a cup.", "Cups hold drinks."] },
+                    { text: "Phone", image: "https://loosedrawing.com/assets/media/illustrations/png/894.png", sentences: ["It's a phone.", "Phones help us talk.", "I can call with a phone."] },
+                    { text: "Computer", image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQjdI7KFYZgTAS1cOWlggMIaJR9fAUqkdfLfw&s", sentences: ["It's a computer.", "Computers are smart.", "I learn with computers."] },
+                    { text: "Toy", image: "https://kids.wanpug.com/illust/illust798.png", sentences: ["It's a toy.", "I have many toys.", "I like to play with toys."] },
+                    { text: "Doll", image: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgR6DR4sE64G4UcUcZLp_Jsl9kzbtZPXBgSHoFTrHgV88RyyxY0S9LADJFX_UjHH8vlRZTvTczABqSBOS0-u2CR6L6J8fHkOMQlC7dCyq2i-ngFxVWpgPypfyhOfHOO2O4Drs24F9IE3Hw/s800/omocha_ningyou.png", sentences: ["It's a doll.", "I have a doll.", "Dolls are fun."] },
+                    { text: "Block", image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ82EoVnkPvyujY3Nxc0v8WgQO3pxjnhXDqEZ7ssvjycXHLU49nwLEyWDI&s=10", sentences: ["It's a block.", "I play with blocks.", "I build with blocks."] },
+                    { text: "Crayon", image: "https://poromi-free.net/wp-content/uploads/2019/11/05-02-191102-crayon.png", sentences: ["It's a crayon.", "I draw with crayons.", "Crayons are colorful."] },
+                    { text: "Pencil", image: "https://tsukatte.com/wp-content/uploads/2019/05/pencil_01-b_green.png", sentences: ["It's a pencil.", "I write with pencils.", "Pencils are useful."] },
+                    { text: "Bag", image: "https://tsukatte.com/wp-content/uploads/2019/12/tote-bag_red.png", sentences: ["It's a bag.", "I have a school bag.", "Bags hold things."] }
+                ]
+            }
         ];
 
-        // 現在の単語と文章インデックス
+        // Current word and sentence index
         let currentWord = null;
         let currentSentenceIndex = 0;
         let speechSpeed = 1.0;
 
-        // カテゴリ初期化
+        // Initialize - generate category buttons
         function initCategories() {
             const container = document.getElementById('categoryContainer');
-            container.innerHTML = '';
             
             categories.forEach(category => {
                 const box = document.createElement('div');
@@ -156,12 +465,16 @@
                     <div class="category-name">${category.name}</div>
                     <div class="category-name-en">${category.nameEn}</div>
                 `;
-                box.addEventListener('click', () => openWordScreen(category));
+                
+                box.addEventListener('click', () => {
+                    openWordScreen(category);
+                });
+                
                 container.appendChild(box);
             });
         }
 
-        // 単語画面を開く
+        // Open word screen
         function openWordScreen(category) {
             document.getElementById('currentCategoryName').textContent = category.name;
             const wordContainer = document.getElementById('wordContainer');
@@ -175,32 +488,139 @@
                     <img src="${word.image}" alt="${word.text}" class="word-image">
                     <div class="word-text">${word.text}</div>
                 `;
-                card.addEventListener('click', () => showSentences(word));
+                
+                card.addEventListener('click', () => {
+                    showSentences(word);
+                });
+                
                 wordContainer.appendChild(card);
             });
             
             document.getElementById('wordScreen').style.display = 'flex';
         }
 
-        // 他の関数（closeWordScreen, showSentences, showNextSentenceなど）もそのまま保持
-        // ... [元のJavaScript関数を全てそのまま保持] ...
+        // Close word screen
+        function closeWordScreen() {
+            document.getElementById('wordScreen').style.display = 'none';
+        }
 
-        // 初期化処理
-        window.addEventListener('load', function() {
-            // 音声速度設定を読み込み
-            const savedSpeed = localStorage.getItem('speechSpeed');
-            if (savedSpeed) speechSpeed = parseFloat(savedSpeed);
+        // Show sentences screen
+        function showSentences(word) {
+            currentWord = word;
+            currentSentenceIndex = 0;
             
-            // 設定メニューを非表示に
+            const sentenceImage = document.getElementById('sentenceImage');
+            const sentenceText = document.getElementById('sentenceText');
+            
+            sentenceImage.src = word.image;
+            sentenceImage.alt = word.text;
+            sentenceText.textContent = word.sentences[0];
+            
+            try {
+                speak(word.sentences[0]);
+            } catch (e) {
+                console.error("Speech synthesis error:", e);
+            }
+            
+            document.getElementById('sentenceScreen').style.display = 'flex';
+        }
+
+        // Show next sentence
+        function showNextSentence() {
+            if (!currentWord) return;
+            
+            currentSentenceIndex++;
+            if (currentSentenceIndex >= currentWord.sentences.length) {
+                closeSentenceScreen();
+                return;
+            }
+            
+            const sentenceText = document.getElementById('sentenceText');
+            sentenceText.textContent = currentWord.sentences[currentSentenceIndex];
+            
+            try {
+                speak(currentWord.sentences[currentSentenceIndex]);
+            } catch (e) {
+                console.error("Speech synthesis error:", e);
+            }
+        }
+
+        // Close sentence screen
+        function closeSentenceScreen() {
+            document.getElementById('sentenceScreen').style.display = 'none';
+        }
+
+        // Speech synthesis function
+        function speak(text) {
+            if ('speechSynthesis' in window) {
+                // Cancel any ongoing speech
+                window.speechSynthesis.cancel();
+                
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.lang = 'en-US';
+                utterance.rate = parseFloat(localStorage.getItem('speechSpeed')) || speechSpeed;
+                
+                // Error handling
+                utterance.onerror = function(event) {
+                    console.error('Speech synthesis error:', event);
+                };
+                
+                window.speechSynthesis.speak(utterance);
+            } else {
+                console.warn('This browser does not support speech synthesis');
+            }
+        }
+
+        // Show/hide settings menu
+        document.getElementById('settingsBtn').addEventListener('click', function(e) {
+            e.stopPropagation();
+            const menu = document.getElementById('settingsMenu');
+            menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+        });
+
+        // Close settings menu when clicking anywhere else
+        document.addEventListener('click', function() {
+            document.getElementById('settingsMenu').style.display = 'none';
+        });
+
+        // Set speech speed
+        function setSpeed(speed) {
+            speechSpeed = speed;
+            localStorage.setItem('speechSpeed', speed.toString());
             document.getElementById('settingsMenu').style.display = 'none';
             
-            // カテゴリを初期化
+            // Notification message
+            const message = `Speech speed set to ${speed}x`;
+            alert(message);
+        }
+
+        // Initialize
+        window.addEventListener('load', function() {
+            const savedSpeed = localStorage.getItem('speechSpeed');
+            if (savedSpeed) {
+                speechSpeed = parseFloat(savedSpeed);
+            }
+            
+            // Hide settings menu initially
+            document.getElementById('settingsMenu').style.display = 'none';
+            
             initCategories();
             
-            // ローディング画面を非表示に
-            setTimeout(() => {
+            // Hide loading screen
+            setTimeout(function() {
                 document.getElementById('loading').style.display = 'none';
             }, 500);
+            
+            // Register service worker for PWA
+            if ('serviceWorker' in navigator) {
+                window.addEventListener('load', () => {
+                    navigator.serviceWorker.register('/sw.js').then(registration => {
+                        console.log('ServiceWorker registration successful with scope: ', registration.scope);
+                    }).catch(err => {
+                        console.log('ServiceWorker registration failed: ', err);
+                    });
+                });
+            }
         });
     </script>
 </body>
